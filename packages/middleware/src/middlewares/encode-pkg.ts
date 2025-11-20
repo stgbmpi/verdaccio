@@ -24,10 +24,9 @@ export function encodeScopePackage(
     return next(errorUtils.getBadRequest(`Invalid URL: ${req.url} (must be relative)`));
   }
 
-  // If the @ sign is encoded, we need to decode it first
-  // e.g.: /%40org/pkg/1.2.3 -> /@org/pkg/1.2.3
-  // For scoped packages, encode the slash to make it a single path segment/parameter
-  // e.g.: /@org/pkg/1.2.3 -> /@org%2Fpkg/1.2.3, /@org%2Fpkg/1.2.3 -> /@org%2Fpkg/1.2.3
+  // Transform scoped package URLs to encode slash, making it a single path segment/parameter
+  // Handles both encoded (%40) and unencoded (@) at-signs, and encoded (%2F) and unencoded (/) slashes
+  // e.g.: /@org/pkg -> /@org%2Fpkg, /%40org/pkg -> /@org%2Fpkg
   //       /-/package/@org/pkg/dist-tags -> /-/package/@org%2Fpkg/dist-tags
   req.url = req.url.replace(
     /^(\/(?:-\/package\/)?)(?:@|%40)([^\/%]+)(?:\/|%2[fF])(?!$)/,
